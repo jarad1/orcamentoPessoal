@@ -59,6 +59,30 @@ class Bd {
         localStorage.setItem(id, JSON.stringify(d))
         localStorage.setItem('id', id)
     }
+    recuperarTodosRegistros() {
+
+        // array de despesas
+        let despesas = Array()
+
+        let id = localStorage.getItem('id')
+
+        // recuperar todas as despesas cadastradas em localStorage
+        for (let i = 1; i<= id; i++ ) {
+
+            // recuperar a despesa
+            let despesa = localStorage.getItem(i)
+            despesa = JSON.parse(despesa)
+
+            // se tiver indices removidos, pula para o proximo
+            if(despesa === null) {
+                continue
+            }
+
+            despesas.push(despesa)
+        }
+
+        return despesas
+    }
 
 }
 
@@ -117,6 +141,13 @@ function cadastrarDespesa() {
 
         $('#modalRegistrarDespesa').modal('show')
 
+        document.getElementById('ano').value = ''
+        document.getElementById('mes').value = ''
+        document.getElementById('dia').value = ''
+        document.getElementById('tipo').value = ''
+        document.getElementById('descricao').value = ''
+        document.getElementById('valor').value = ''
+
     }else {
 
         let title = document.getElementById('title')
@@ -135,4 +166,37 @@ function cadastrarDespesa() {
         // dialog de erro
         $('#modalRegistrarDespesa').modal('show')
     }
+}
+
+function carregarListaDespesas() {
+    let despesas = Array()
+    despesas = bd.recuperarTodosRegistros()
+
+    // selecionando tbody
+    let listaDespesas = document.getElementById('listaDespesas')
+
+    despesas.forEach(function(d) {
+
+        console.log(d)
+        let linha = listaDespesas.insertRow()
+
+        linha.insertCell(0).innerHTML = (`${d.dia}/${d.mes}/${d.ano}`) 
+
+        switch(parseInt(d.tipo)) {
+
+            case 1: d.tipo = 'Alimentação'
+                break
+            case 2: d.tipo = 'Educação'
+                break
+            case 3: d.tipo = 'Lazer'
+                break
+            case 4: d.tipo = 'Saúde'
+                break
+            case 5: d.tipo = 'Transporte'
+                break
+        }
+        linha.insertCell(1).innerHTML = d.tipo
+        linha.insertCell(2).innerHTML = d.descricao
+        linha.insertCell(3).innerHTML = d.valor
+    })
 }
